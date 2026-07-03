@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ignyte — A Pyreloch Game Jam · GVEI Hackathon 2026</title>
+<meta name="description" content="A two-day game jam for grades 6–12 at GVEI Hackathon 2026, Green Valley Educational Institute, Srinagar. Run by Pyreloch." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- Tailwind (Play CDN — for preview only) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        card: { DEFAULT: "var(--card)", foreground: "var(--card-foreground)" },
+        "muted-foreground": "var(--muted-foreground)",
+        muted: "var(--muted)",
+        border: "var(--border)",
+        primary: { DEFAULT: "var(--primary)", foreground: "var(--primary-foreground)" },
+        ember: "var(--ember)",
+        "ember-bright": "var(--ember-bright)",
+        "ember-deep": "var(--ember-deep)",
+        loch: "var(--loch)",
+        gold: "var(--gold)",
+      },
+      fontFamily: {
+        display: ['"Space Grotesk"', "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+      },
+    },
+  },
+};
+</script>
+
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+  :root {
+    --background: oklch(0.165 0.012 52);
+    --foreground: oklch(0.965 0.006 75);
+    --card: oklch(0.212 0.014 55);
+    --card-foreground: oklch(0.965 0.006 75);
+    --muted: oklch(0.245 0.014 55);
+    --muted-foreground: oklch(0.715 0.016 70);
+    --border: oklch(0.33 0.02 55 / 0.45);
+    --primary: oklch(0.75 0.17 58);
+    --primary-foreground: oklch(0.17 0.02 50);
+    --ember: oklch(0.75 0.17 58);
+    --ember-bright: oklch(0.84 0.15 70);
+    --ember-deep: oklch(0.56 0.21 38);
+    --loch: oklch(0.6 0.1 158);
+    --gold: oklch(0.83 0.13 86);
+    --radius: 0.75rem;
+  }
+  * { scrollbar-width: thin; scrollbar-color: oklch(0.55 0.12 55 / 0.6) transparent; }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: oklch(0.5 0.1 55 / 0.5); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Inter, sans-serif;
+    background-image:
+      radial-gradient(120% 80% at 50% -10%, oklch(0.28 0.06 45 / 0.55), transparent 60%),
+      radial-gradient(80% 60% at 100% 0%, oklch(0.3 0.05 30 / 0.35), transparent 55%),
+      radial-gradient(70% 60% at 0% 30%, oklch(0.22 0.05 160 / 0.25), transparent 60%);
+    background-attachment: fixed;
+  }
+  ::selection { background: oklch(0.75 0.17 58 / 0.3); color: oklch(0.98 0.01 80); }
+
+  .text-gradient-ember {
+    background-image: linear-gradient(100deg, oklch(0.84 0.15 70), oklch(0.75 0.17 58) 35%, oklch(0.62 0.16 35) 70%, oklch(0.83 0.13 86));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .text-gradient-loch {
+    background-image: linear-gradient(100deg, oklch(0.75 0.17 58), oklch(0.7 0.12 95) 50%, oklch(0.6 0.1 158));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .card-ember {
+    background: linear-gradient(180deg, oklch(0.26 0.016 55 / 0.9), oklch(0.2 0.013 53 / 0.9));
+    border: 1px solid oklch(0.4 0.025 58 / 0.4);
+    position: relative; overflow: hidden;
+  }
+  .card-ember::before { content:""; position:absolute; inset:0; background: radial-gradient(120% 60% at 50% -20%, oklch(0.75 0.17 58 / 0.12), transparent 70%); pointer-events:none; }
+  .card-hover { transition: transform .4s cubic-bezier(.22,1,.36,1), border-color .4s ease, box-shadow .4s ease; }
+  .card-hover:hover { transform: translateY(-6px); border-color: oklch(0.55 0.14 58 / 0.6); box-shadow: 0 18px 50px -20px oklch(0.75 0.17 58 / 0.5); }
+  .ring-ember { box-shadow: 0 0 0 1px oklch(0.75 0.17 58 / 0.35), 0 0 40px -8px oklch(0.75 0.17 58 / 0.4); }
+  .bg-grid { background-image: linear-gradient(oklch(0.5 0.02 60 / 0.06) 1px, transparent 1px), linear-gradient(90deg, oklch(0.5 0.02 60 / 0.06) 1px, transparent 1px); background-size: 44px 44px; }
+  .bg-noise { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"); }
+  .mask-fade-x { -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .field-glow:focus-visible { border-color: oklch(0.75 0.17 58 / 0.8); box-shadow: 0 0 0 3px oklch(0.75 0.17 58 / 0.25); outline: none; }
+  .border-shimmer { position: relative; }
+  .border-shimmer::after { content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; background: linear-gradient(120deg, oklch(0.75 0.17 58 / 0), oklch(0.85 0.15 70 / 0.8), oklch(0.75 0.17 58 / 0)); background-size:250% 100%; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: shimmer 4.5s linear infinite; pointer-events:none; }
+  .aurora { position:absolute; border-radius:999px; filter: blur(70px); opacity:0.55; mix-blend-mode: screen; animation: aurora-drift var(--aurora-dur, 22s) ease-in-out infinite; pointer-events:none; }
+
+  /* ===== NEW: Scroll progress bar ===== */
+  .scroll-progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+    background: linear-gradient(90deg, oklch(0.84 0.15 70), oklch(0.75 0.17 58) 40%, oklch(0.62 0.16 35) 70%, oklch(0.83 0.13 86));
+    transform-origin: 0 50%; transform: scaleX(0);
+    z-index: 60; transition: transform .08s linear;
+    box-shadow: 0 0 12px oklch(0.75 0.17 58 / 0.6);
+  }
+
+  /* ===== NEW: Cursor glow ===== */
+  .cursor-glow {
+    position: fixed; pointer-events: none; z-index: 25;
+    width: 540px; height: 540px; border-radius: 50%;
+    background: radial-gradient(circle, oklch(0.75 0.17 58 / 0.10), oklch(0.62 0.16 35 / 0.05) 35%, transparent 65%);
+    transform: translate(-50%, -50%);
+    opacity: 0; transition: opacity .5s ease;
+    mix-blend-mode: screen;
+    will-change: transform;
+  }
+  body:hover .cursor-glow { opacity: 1; }
+
+  /* ===== NEW: Reveal on scroll ===== */
+  .reveal { opacity: 0; transform: translateY(34px); transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); will-change: transform, opacity; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: .08s; }
+  .reveal-delay-2 { transition-delay: .16s; }
+  .reveal-delay-3 { transition-delay: .24s; }
+  .reveal-delay-4 { transition-delay: .32s; }
+  .reveal-delay-5 { transition-delay: .40s; }
+
+  /* ===== NEW: Letter stagger for hero title ===== */
+  .title-letter { display: inline-block; opacity: 0; transform: translateY(60px) rotate(-12deg) scale(.7); animation: letter-in .9s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes letter-in { to { opacity: 1; transform: translateY(0) rotate(0) scale(1); } }
+
+  /* ===== NEW: Hero word slide-in ===== */
+  .word-slide { display: inline-block; opacity: 0; transform: translateY(20px); animation: word-slide-in .9s cubic-bezier(.22,1,.36,1) forwards; animation-delay: .9s; }
+  @keyframes word-slide-in { to { opacity: 1; transform: translateY(0); } }
+  .fade-up-1 { opacity: 0; transform: translateY(18px); animation: word-slide-in .8s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 1.05s; }
+  .fade-up-2 { opacity: 0; transform: translateY(18px); animation: word-slide-in .8s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 1.2s; }
+  .fade-up-3 { opacity: 0; transform: translateY(18px); animation: word-slide-in .8s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 1.35s; }
+  .fade-up-4 { opacity: 0; transform: translateY(18px); animation: word-slide-in .8s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 1.5s; }
+  .fade-up-5 { opacity: 0; transform: translateY(18px); animation: word-slide-in .8s cubic-bezier(.22,1,.36,1) forwards; animation-delay: 1.65s; }
+
+  /* ===== NEW: Magnetic buttons ===== */
+  .magnetic { transition: transform .25s cubic-bezier(.22,1,.36,1); will-change: transform; }
+  .magnetic-inner { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; transition: transform .25s cubic-bezier(.22,1,.36,1); }
+
+  /* ===== NEW: 3D tilt ===== */
+  .tilt { transform-style: preserve-3d; transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .4s ease; will-change: transform; }
+  .tilt-inner { transform-style: preserve-3d; }
+  .tilt-pop { transform: translateZ(40px); }
+
+  /* ===== NEW: Back to top ===== */
+  .back-to-top {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 50;
+    width: 3rem; height: 3rem; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, oklch(0.3 0.06 55 / 0.95), oklch(0.22 0.04 53 / 0.95));
+    border: 1px solid oklch(0.55 0.14 58 / 0.5);
+    color: oklch(0.84 0.15 70);
+    backdrop-filter: blur(10px);
+    opacity: 0; pointer-events: none; transform: translateY(20px) scale(.9);
+    transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+    box-shadow: 0 10px 30px -10px oklch(0 0 0 / 0.6);
+  }
+  .back-to-top.show { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+  .back-to-top:hover { box-shadow: 0 0 0 1px oklch(0.75 0.17 58 / 0.6), 0 14px 36px -10px oklch(0.75 0.17 58 / 0.5); transform: translateY(-3px) scale(1.04); }
+
+  /* ===== NEW: Confetti ===== */
+  .confetti-piece { position: fixed; top: -10vh; width: 9px; height: 14px; z-index: 95; pointer-events: none; will-change: transform, opacity; }
+
+  /* ===== NEW: Filter chips ===== */
+  .chip {
+    cursor: pointer; transition: all .22s cubic-bezier(.22,1,.36,1);
+    user-select: none;
+  }
+  .chip:hover { border-color: oklch(0.55 0.14 58 / 0.5); color: oklch(0.84 0.15 70); }
+  .chip.active {
+    background: linear-gradient(180deg, oklch(0.75 0.17 58 / 0.22), oklch(0.62 0.16 35 / 0.15));
+    border-color: oklch(0.75 0.17 58 / 0.7);
+    color: oklch(0.88 0.13 70);
+    box-shadow: 0 0 22px -6px oklch(0.75 0.17 58 / 0.55), inset 0 0 0 1px oklch(0.75 0.17 58 / 0.2);
+  }
+
+  /* ===== NEW: count-up ===== */
+  .counter { font-variant-numeric: tabular-nums; }
+
+  /* ===== NEW: glow text ===== */
+  .glow-ember { text-shadow: 0 0 28px oklch(0.75 0.17 58 / 0.45), 0 0 60px oklch(0.75 0.17 58 / 0.25); }
+
+  /* ===== NEW: Floating labels ===== */
+  .float-field { position: relative; }
+  .float-field input, .float-field select {
+    width: 100%; height: 3rem;
+    padding: 1.2rem 0.75rem 0.3rem;
+    background: oklch(0.18 0.012 55 / 0.5);
+    border: 1px solid oklch(0.33 0.02 55 / 0.5);
+    border-radius: 0.5rem;
+    color: var(--foreground);
+    font-size: 0.875rem;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    appearance: none;
+  }
+  .float-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='oklch(0.7 0.04 70)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2rem; }
+  .float-field input:focus, .float-field select:focus {
+    outline: none; border-color: oklch(0.75 0.17 58 / 0.8);
+    box-shadow: 0 0 0 3px oklch(0.75 0.17 58 / 0.18);
+    background: oklch(0.2 0.014 55 / 0.6);
+  }
+  .float-field label {
+    position: absolute; left: 0.75rem; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    font-size: 0.875rem; pointer-events: none;
+    transition: all .18s cubic-bezier(.22,1,.36,1);
+  }
+  .float-field input:focus + label,
+  .float-field input:not(:placeholder-shown) + label,
+  .float-field select:focus + label,
+  .float-field select.has-value + label {
+    top: 0.45rem; transform: translateY(0);
+    font-size: 0.68rem; color: oklch(0.84 0.15 70);
+    letter-spacing: 0.04em;
+  }
+
+  /* ===== NEW: Quiz transitions ===== */
+  .quiz-step { animation: quiz-in .35s cubic-bezier(.22,1,.36,1); }
+  @keyframes quiz-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* ===== NEW: Timeline ===== */
+  .tl-item { position: relative; padding-left: 1.75rem; }
+  .tl-item::before {
+    content: ''; position: absolute; left: 0; top: 0.4rem;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: oklch(0.75 0.17 58);
+    box-shadow: 0 0 0 4px oklch(0.75 0.17 58 / 0.18), 0 0 14px oklch(0.75 0.17 58 / 0.6);
+  }
+  .tl-item.gold::before { background: oklch(0.83 0.13 86); box-shadow: 0 0 0 4px oklch(0.83 0.13 86 / 0.18), 0 0 14px oklch(0.83 0.13 86 / 0.6); }
+  .tl-item::after {
+    content: ''; position: absolute; left: 5px; top: 1.2rem; bottom: -0.5rem;
+    width: 1px; background: linear-gradient(180deg, oklch(0.55 0.14 58 / 0.4), transparent);
+  }
+  .tl-item:last-child::after { display: none; }
+
+  /* ===== NEW: Spotlight card ===== */
+  .spotlight { position: relative; overflow: hidden; }
+  .spotlight::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), oklch(0.84 0.15 70 / 0.10), transparent 60%);
+    opacity: 0; transition: opacity .35s ease; pointer-events: none;
+  }
+  .spotlight:hover::after { opacity: 1; }
+
+  /* ===== NEW: countdown flip ===== */
+  .flip-num {
+    display: inline-block; min-width: 1ch;
+    font-variant-numeric: tabular-nums;
+    transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .35s ease;
+  }
+  .flip-num.flipping { transform: translateY(-6px) rotateX(60deg); opacity: 0; }
+
+  /* ===== NEW: shimmer text underline ===== */
+  .shimmer-link { position: relative; }
+  .shimmer-link::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+    background: linear-gradient(90deg, transparent, oklch(0.84 0.15 70), transparent);
+    background-size: 200% 100%;
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .4s cubic-bezier(.22,1,.36,1);
+  }
+  .shimmer-link:hover::after { transform: scaleX(1); animation: shimmer 2s linear infinite; }
+
+  @keyframes ember-rise { 0%{transform:translateY(0) translateX(0) scale(1);opacity:0} 10%{opacity:.9} 80%{opacity:.7} 100%{transform:translateY(-120vh) translateX(var(--drift,20px)) scale(.3);opacity:0} }
+  .animate-ember { animation: ember-rise var(--dur,14s) linear infinite; }
+  @keyframes float-slow { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 0 0 oklch(0.75 0.17 58 / 0.5), 0 0 22px -4px oklch(0.75 0.17 58 / 0.6)} 50%{box-shadow:0 0 0 6px oklch(0.75 0.17 58 / 0), 0 0 34px -2px oklch(0.75 0.17 58 / 0.8)} }
+  .animate-pulse-glow { animation: pulse-glow 2.6s ease-in-out infinite; }
+  @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .animate-marquee { animation: marquee var(--marquee-dur,38s) linear infinite; }
+  .marquee-wrap:hover .animate-marquee { animation-play-state: paused; }
+  @keyframes scroll-hint { 0%{transform:translateY(0);opacity:0} 35%{opacity:1} 100%{transform:translateY(14px);opacity:0} }
+  .animate-scroll-hint { animation: scroll-hint 1.8s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+  .animate-blink { animation: blink 1.4s steps(2) infinite; }
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  @keyframes aurora-drift { 0%{transform:translate3d(0,0,0) scale(1)} 33%{transform:translate3d(4%,-6%,0) scale(1.12)} 66%{transform:translate3d(-5%,4%,0) scale(.94)} 100%{transform:translate3d(0,0,0) scale(1)} }
+  @keyframes hue-shift { 0%,100%{filter:hue-rotate(0)} 50%{filter:hue-rotate(20deg)} }
+  .animate-hue { animation: hue-shift 12s ease-in-out infinite; }
+
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .acc-chevron { transform: rotate(180deg); }
+  .acc-chevron { transition: transform .25s ease; }
+  details[open] summary .acc-q { color: oklch(0.84 0.15 70); }
+
+  /* ===== NEW: nav active indicator ===== */
+  .nav-btn { position: relative; }
+  .nav-btn::after {
+    content: ''; position: absolute; left: 50%; bottom: -2px;
+    transform: translateX(-50%) scaleX(0);
+    width: 60%; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, oklch(0.84 0.15 70), oklch(0.62 0.16 35));
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .nav-btn.active::after { transform: translateX(-50%) scaleX(1); }
+  .nav-btn.active { color: var(--foreground) !important; }
+
+  /* ===== NEW: stat tile hover ===== */
+  .stat-tile { transition: transform .35s cubic-bezier(.22,1,.36,1), background .35s ease; }
+  .stat-tile:hover { transform: translateY(-3px); background: oklch(0.28 0.05 55 / 0.7); }
+
+  /* ===== NEW: gradient ring on focus ===== */
+  a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid oklch(0.84 0.15 70 / 0.7);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* ===== NEW: parallax hero layers ===== */
+  .parallax-layer { will-change: transform; transition: transform .15s ease-out; }
+
+  /* ===== NEW: tag pill with hover glow ===== */
+  .pill { transition: all .25s cubic-bezier(.22,1,.36,1); }
+  .pill:hover { transform: translateY(-2px); border-color: oklch(0.55 0.14 58 / 0.5); box-shadow: 0 8px 22px -10px oklch(0.75 0.17 58 / 0.4); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+    .reveal { opacity: 1 !important; transform: none !important; }
+    .title-letter, .word-slide, .fade-up-1, .fade-up-2, .fade-up-3, .fade-up-4, .fade-up-5 { opacity: 1 !important; transform: none !important; }
+    .cursor-glow, .back-to-top { display: none !important; }
+  }
+
+  @media (max-width: 640px) {
+    .cursor-glow { display: none; }
+  }
+</style>
+</head>
+<body class="bg-background text-foreground antialiased">
+
+<!-- NEW: Scroll progress bar -->
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<!-- NEW: Cursor glow -->
+<div class="cursor-glow" id="cursor-glow"></div>
+
+<!-- Ignyte flame mark -->
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="ig-mark" viewBox="0 0 32 32">
+  <defs><linearGradient id="igFlame" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse">
+    <stop stop-color="oklch(0.88 0.16 75)"/><stop offset="0.5" stop-color="oklch(0.76 0.18 58)"/><stop offset="1" stop-color="oklch(0.54 0.22 32)"/>
+  </linearGradient></defs>
+  <path d="M16 2c2.4 4.8 1.2 7.7-.6 9.8-1.8 2.1-3.3 3.9-3.3 6.5 0 1.4.5 2.5 1.4 3.3-.2-1.7.5-3.2 1.7-4.3.3 2.1 1 3.1 2 4.3.9 1 1.4 2.1 1.4 3.4 0 3.1-2.7 5.5-6.2 5.5C8.4 30.8 5.4 28 5.4 24c0-5 4.6-7.5 6.7-13 .9-2.2 1.3-4.6.6-9 2.8 1.5 4.5 3.8 5.3 6.3.8 2.1.5 4-.9 5.3" fill="url(#igFlame)"/>
+  <path d="M3 26c3.3-1.7 6.7-2.5 10-2.5h6c3.3 0 6.7.8 10 2.5" stroke="oklch(0.6 0.1 158)" stroke-width="2" stroke-linecap="round" opacity="0.75"/>
+  <path d="M6 29.4c2.6-1.1 5.1-1.6 7.6-1.6h4.8c2.5 0 5 .5 7.6 1.6" stroke="oklch(0.6 0.1 158)" stroke-width="1.6" stroke-linecap="round" opacity="0.45"/>
+</symbol>
+</defs></svg>
+
+<div class="relative flex min-h-screen flex-col">
+
+  <!-- TOP BAR -->
+  <div class="relative z-50 border-b border-border/40 bg-background/70 backdrop-blur">
+    <div class="mx-auto flex h-9 max-w-6xl items-center justify-between px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
+      <span class="flex items-center gap-2">
+        <svg class="size-4"><use href="#ig-mark"/></svg>
+        <span class="font-medium text-foreground/80">Ignyte</span>
+        <span class="hidden sm:inline">· GVEI Hackathon 2026 · Green Valley Educational Institute, Srinagar</span>
+      </span>
+      <span class="hidden items-center gap-2 sm:flex">
+        <span class="inline-flex items-center gap-1 rounded-full border border-ember/40 px-2 py-0.5 text-[10px] text-ember">
+          <span class="size-1.5 animate-blink rounded-full bg-ember"></span> Registration open
+        </span>
+      </span>
+      <a href="#register" class="shimmer-link text-ember hover:underline">Register your team →</a>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="#overview" class="flex items-center gap-2.5 magnetic" data-magnetic>
+        <span class="ring-ember flex size-9 items-center justify-center rounded-xl bg-gradient-to-b from-ember/25 to-ember-deep/20">
+          <svg class="size-5"><use href="#ig-mark"/></svg>
+        </span>
+        <span class="flex flex-col leading-none">
+          <span class="font-display text-sm font-bold tracking-tight text-foreground">Ignyte</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">a Pyreloch game jam</span>
+        </span>
+      </a>
+      <nav class="hidden items-center gap-1 lg:flex" id="nav-links">
+        <a href="#overview" data-nav="overview" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Overview</a>
+        <a href="#mission" data-nav="mission" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Mission</a>
+        <a href="#roles" data-nav="roles" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Roles</a>
+        <a href="#jam" data-nav="jam" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">The Jam</a>
+        <a href="#tools" data-nav="tools" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Tools</a>
+        <a href="#awards" data-nav="awards" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Awards</a>
+        <a href="#register" data-nav="register" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">Register</a>
+        <a href="#faq" data-nav="faq" class="nav-btn rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href="#register" class="magnetic hidden sm:inline-flex" data-magnetic data-magnetic-strength="0.3">
+          <span class="magnetic-inner items-center justify-center gap-2 rounded-md bg-ember px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-ember/90 h-9 ring-ember">
+            Register <i data-lucide="arrow-right" class="size-4"></i>
+          </span>
+        </a>
+        <button id="menu-btn" class="lg:hidden inline-flex items-center justify-center size-9 rounded-md hover:bg-accent" aria-label="Toggle menu">
+          <i data-lucide="menu" class="size-5" id="menu-icon"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden overflow-hidden border-t border-border/40 bg-background/95 lg:hidden">
+      <div class="mx-auto grid max-w-6xl grid-cols-2 gap-1 px-4 py-3 sm:px-6 lg:px-8">
+        <a href="#overview" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">Overview</a>
+        <a href="#mission" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">Mission</a>
+        <a href="#roles" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">Roles</a>
+        <a href="#jam" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">The Jam</a>
+        <a href="#tools" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">Tools</a>
+        <a href="#awards" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">Awards</a>
+        <a href="#register" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">Register</a>
+        <a href="#faq" class="rounded-md px-3 py-2 text-left text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04]">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+
+    <!-- HERO -->
+    <section class="relative isolate overflow-hidden">
+      <div class="absolute inset-0 -z-10 parallax-layer" data-parallax="0.15">
+        <div class="bg-grid absolute inset-0 opacity-40"></div>
+        <div class="bg-noise absolute inset-0 opacity-[0.12]"></div>
+      </div>
+      <div class="pointer-events-none absolute inset-0 overflow-hidden parallax-layer" data-parallax="0.25">
+        <div class="aurora animate-hue" style="width:55vw;height:55vw;left:-10%;top:-15%;background:oklch(0.7 0.2 45 / 0.5);--aurora-dur:24s"></div>
+        <div class="aurora animate-hue" style="width:48vw;height:48vw;right:-12%;top:10%;background:oklch(0.62 0.16 30 / 0.45);--aurora-dur:30s;animation-delay:-8s"></div>
+        <div class="aurora animate-hue" style="width:50vw;height:50vw;left:25%;bottom:-25%;background:oklch(0.55 0.14 165 / 0.32);--aurora-dur:34s;animation-delay:-16s"></div>
+      </div>
+      <div id="embers" class="pointer-events-none absolute inset-0 overflow-hidden"></div>
+
+      <div class="mx-auto relative flex min-h-[88vh] max-w-6xl flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
+        <div class="max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 fade-up-1">
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-ember/40 px-2.5 py-0.5 text-xs text-ember"><i data-lucide="flame" class="size-3.5"></i> Ignyte</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground"><i data-lucide="mountain" class="size-3.5"></i> GVEI Hackathon 2026</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground"><i data-lucide="calendar" class="size-3.5"></i> August · tentative</span>
+          </div>
+          <h1 class="font-display mt-6 text-6xl font-bold leading-[0.95] tracking-tight sm:text-7xl md:text-8xl text-gradient-ember glow-ember" id="hero-title">Ignyte</h1>
+          <p class="font-display mt-3 text-2xl font-semibold text-foreground sm:text-3xl fade-up-2">Build a game. Put it on a stage.</p>
+          <p class="mt-5 max-w-xl text-lg leading-relaxed text-foreground/85 sm:text-xl fade-up-3">A game jam for grades 6 through 12, at the heart of GVEI Hackathon 2026. You bring a team of five, we hand you a theme and a clock, and you walk out with a game that's actually yours. Run by Pyreloch, the valley's own game studio.</p>
+          <div class="mt-8 flex flex-wrap items-center gap-3 fade-up-4">
+            <a href="#register" class="magnetic inline-flex" data-magnetic data-magnetic-strength="0.4">
+              <span class="magnetic-inner items-center justify-center gap-2 rounded-md bg-ember px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-ember/90 ring-ember animate-pulse-glow">
+                Register your team <i data-lucide="arrow-right" class="size-4"></i>
+              </span>
+            </a>
+            <a href="#roles" class="inline-flex items-center justify-center gap-2 rounded-md border border-border/70 bg-background/40 px-6 py-3 text-sm font-medium backdrop-blur hover:bg-accent fade-up-4">Find your role</a>
+          </div>
+
+          <!-- NEW: Countdown -->
+          <div class="mt-10 fade-up-5" id="countdown-wrap">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">Countdown to kickoff</p>
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="text-center">
+                <div class="font-display text-3xl sm:text-4xl font-bold text-ember counter"><span class="flip-num" id="cd-d">--</span></div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">days</div>
+              </div>
+              <span class="font-display text-2xl text-ember/40">·</span>
+              <div class="text-center">
+                <div class="font-display text-3xl sm:text-4xl font-bold text-ember counter"><span class="flip-num" id="cd-h">--</span></div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">hrs</div>
+              </div>
+              <span class="font-display text-2xl text-ember/40">·</span>
+              <div class="text-center">
+                <div class="font-display text-3xl sm:text-4xl font-bold text-ember counter"><span class="flip-num" id="cd-m">--</span></div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">min</div>
+              </div>
+              <span class="font-display text-2xl text-ember/40">·</span>
+              <div class="text-center">
+                <div class="font-display text-3xl sm:text-4xl font-bold text-ember counter"><span class="flip-num" id="cd-s">--</span></div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">sec</div>
+              </div>
+            </div>
+            <p class="mt-3 text-xs text-muted-foreground/70">Tentative date — confirm at registration.</p>
+          </div>
+
+          <dl class="mt-12 grid max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/50 sm:grid-cols-4 fade-up-5">
+            <div class="stat-tile bg-card/60 px-4 py-3 backdrop-blur"><dt class="font-display text-2xl font-bold text-ember counter" data-count="9">0</dt><dd class="text-xs text-muted-foreground">roles to pick from</dd></div>
+            <div class="stat-tile bg-card/60 px-4 py-3 backdrop-blur"><dt class="font-display text-2xl font-bold text-ember counter" data-count="5">0</dt><dd class="text-xs text-muted-foreground">to a team</dd></div>
+            <div class="stat-tile bg-card/60 px-4 py-3 backdrop-blur"><dt class="font-display text-2xl font-bold text-ember counter" data-count="6">0</dt><dd class="text-xs text-muted-foreground">awards on the line</dd></div>
+            <div class="stat-tile bg-card/60 px-4 py-3 backdrop-blur"><dt class="font-display text-2xl font-bold text-ember">₹<span class="counter" data-count="500">0</span></dt><dd class="text-xs text-muted-foreground">entry per student</dd></div>
+          </dl>
+        </div>
+        <div class="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-muted-foreground sm:flex">
+          <span class="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+          <span class="relative flex h-9 w-5 justify-center rounded-full border border-border/70"><span class="animate-scroll-hint mt-1.5 size-1.5 rounded-full bg-ember"></span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLS MARQUEE -->
+    <div class="border-y border-border/40 bg-card/30 py-4 marquee-wrap">
+      <div class="mask-fade-x relative overflow-hidden">
+        <div class="animate-marquee flex w-max items-center gap-8 pr-8" style="--marquee-dur:60s" id="marquee-track"></div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="scroll-mt-24 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> The idea</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl md:text-[2.75rem]">One team. One theme. <span class="text-gradient-ember">A game by the end.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">You walk in with your team, the theme drops, and the clock starts. What comes out the other side is a playable game with your name on it.</p>
+        </div>
+        <div class="mt-10 grid gap-4 sm:grid-cols-3">
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-6 reveal reveal-delay-1"><span class="flex size-11 items-center justify-center rounded-xl bg-ember/15 text-ember"><i data-lucide="target" class="size-5"></i></span><h3 class="font-display mt-4 text-lg font-semibold">Pick a role. Make it yours.</h3><p class="mt-2 text-sm leading-relaxed text-muted-foreground">Nine roles to pick from. Find the one that fits and own it.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-6 reveal reveal-delay-2"><span class="flex size-11 items-center justify-center rounded-xl bg-ember/15 text-ember"><i data-lucide="hammer" class="size-5"></i></span><h3 class="font-display mt-4 text-lg font-semibold">Build something real.</h3><p class="mt-2 text-sm leading-relaxed text-muted-foreground">No mockups, no slides. A playable thing, start to finish, on a screen by day two.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-6 reveal reveal-delay-3"><span class="flex size-11 items-center justify-center rounded-xl bg-ember/15 text-ember"><i data-lucide="trophy" class="size-5"></i></span><h3 class="font-display mt-4 text-lg font-semibold">Show it. Win it.</h3><p class="mt-2 text-sm leading-relaxed text-muted-foreground">Day two ends on the big screen. Six awards are on the line, voted by the room.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MISSION -->
+    <section id="mission" class="scroll-mt-24 border-y border-border/40 bg-card/20 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div class="max-w-3xl reveal">
+            <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> Why Pyreloch runs this</span>
+            <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Born in the valley. <span class="text-gradient-ember">Built for it.</span></h2>
+            <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">Pyreloch is a video game company from Kashmir. We make games, and we grow the people who make them.</p>
+          </div>
+          <div class="card-ember spotlight rounded-2xl p-6 sm:p-8 reveal reveal-delay-2">
+            <p class="text-base leading-relaxed text-foreground/90">The valley is full of storytellers, artists and coders. Most of them never get the chance to turn that into a career. Pyreloch exists to change that. We train. We hire. We build a path from a kid who likes drawing to a professional who ships games.</p>
+            <p class="mt-4 text-base leading-relaxed text-foreground/90">Ignyte is where a lot of them start. You show up, you find your role, you build something with your hands. If it sticks, there's a road from here into the industry. If it doesn't, you still walked away with a game you made.</p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="pill inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground">Indigenous</span>
+              <span class="pill inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground">Kashmir-made</span>
+              <span class="pill inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground">Training to employment</span>
+              <span class="pill inline-flex items-center rounded-full border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground">Studio-run</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROLES -->
+    <section id="roles" class="scroll-mt-24 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> Find your role</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Nine roles. <span class="text-gradient-ember">Find yours.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">Tap a role to see what it does, or take the quiz and let us point you toward the ones that fit how you think.</p>
+        </div>
+
+        <!-- NEW: role filter chips -->
+        <div class="mt-8 flex flex-wrap items-center gap-2 reveal reveal-delay-1" id="role-filters">
+          <span class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mr-1">Filter</span>
+          <button class="chip active rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-filter="all">All · 9</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-filter="code"><i data-lucide="code-2" class="size-3 inline -mt-0.5 mr-1"></i>Code</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-filter="art"><i data-lucide="palette" class="size-3 inline -mt-0.5 mr-1"></i>Art &amp; Sound</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-filter="direction"><i data-lucide="pen-line" class="size-3 inline -mt-0.5 mr-1"></i>Direction</button>
+        </div>
+
+        <div class="mt-12 space-y-6">
+          <div id="roles-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+          <div class="mx-auto max-w-2xl reveal">
+            <div class="card-ember spotlight rounded-2xl p-5 sm:p-6">
+              <div id="quiz"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE JAM -->
+    <section id="jam" class="scroll-mt-24 border-y border-border/40 bg-card/20 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> The two days</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Day one you start. <span class="text-gradient-ember">Day two you ship.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">No filler, no warm-up rounds. The clock starts and you're building.</p>
+        </div>
+        <div class="mt-10 grid gap-5 md:grid-cols-2">
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-7 reveal reveal-delay-1">
+            <div class="flex items-center gap-3"><span class="flex size-11 items-center justify-center rounded-xl bg-ember/15 font-display text-lg font-bold text-ember">01</span><h3 class="font-display text-xl font-semibold">Day One</h3></div>
+            <p class="mt-4 text-sm leading-relaxed text-muted-foreground">It opens with an interactive lecture on where computer science can actually take you — the paths beyond just "coding." Then the theme drops. You lock roles with your team, sketch a concept, and start building. By sundown something's moving on a screen.</p>
+            <ul class="mt-5 space-y-2.5 text-sm text-foreground/85">
+              <li class="tl-item"><span class="font-medium text-foreground">Morning</span> · Interactive talk: the roads through CS</li>
+              <li class="tl-item"><span class="font-medium text-foreground">Midday</span> · Theme revealed at kickoff</li>
+              <li class="tl-item"><span class="font-medium text-foreground">Afternoon</span> · Lock your roles and scope</li>
+              <li class="tl-item"><span class="font-medium text-foreground">Nightfall</span> · First playable on a screen</li>
+            </ul>
+          </div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-7 reveal reveal-delay-2">
+            <div class="flex items-center gap-3"><span class="flex size-11 items-center justify-center rounded-xl bg-gold/15 font-display text-lg font-bold text-gold">02</span><h3 class="font-display text-xl font-semibold">Day Two</h3></div>
+            <p class="mt-4 text-sm leading-relaxed text-muted-foreground">You polish. You break things and fix them. You cut whatever you can't finish. Then you put your game on the big screen, play everyone else's, and find out who takes the awards home.</p>
+            <ul class="mt-5 space-y-2.5 text-sm text-foreground/85">
+              <li class="tl-item gold"><span class="font-medium text-foreground">Morning</span> · Polish, test, cut</li>
+              <li class="tl-item gold"><span class="font-medium text-foreground">Afternoon</span> · Showcase on the big screen</li>
+              <li class="tl-item gold"><span class="font-medium text-foreground">Evening</span> · Awards, voted by the room</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-ember/25 bg-ember/[0.06] p-5 sm:flex-row sm:items-center reveal reveal-delay-3">
+          <i data-lucide="sparkles" class="size-5 shrink-0 text-ember"></i>
+          <p class="text-sm leading-relaxed text-foreground/90">The theme stays sealed until kickoff. You'll find out the same moment everyone else does.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="tools" class="scroll-mt-24 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> The stack</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Real tools. <span class="text-gradient-ember">The ones studios use.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">Free, open, or student-friendly. Bring what you know, try what you don't. This is the same kit professional teams ship with.</p>
+        </div>
+
+        <!-- NEW: tools filter chips -->
+        <div class="mt-8 flex flex-wrap items-center gap-2 reveal reveal-delay-1" id="tool-filters">
+          <span class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mr-1">Show</span>
+          <button class="chip active rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="all">All</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="engine">Engines</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="art">Art &amp; 2D</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="3d">3D</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="audio">Audio</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="code">Code</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="narrative">Narrative</button>
+          <button class="chip rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground" data-tfilter="ship">Ship &amp; Stream</button>
+        </div>
+
+        <div id="tools-grid" class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"></div>
+      </div>
+    </section>
+
+    <!-- ARCHITECT SEAT -->
+    <section class="scroll-mt-24 border-y border-border/40 bg-card/20 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> The Architect seat</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Love code, not gameplay? <span class="text-gradient-loch">Build everything around the game.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">The Architect seat is for you. Real engineering, in service of your team's game.</p>
+        </div>
+        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-1"><span class="flex size-10 items-center justify-center rounded-xl bg-loch/15 text-loch"><i data-lucide="globe" class="size-5"></i></span><h4 class="font-display mt-3 text-base font-semibold">Game website</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">A landing page for the team's game. Screenshots, story, a playable link.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-1"><span class="flex size-10 items-center justify-center rounded-xl bg-loch/15 text-loch"><i data-lucide="trophy" class="size-5"></i></span><h4 class="font-display mt-3 text-base font-semibold">Leaderboard</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">A score server so playtesters can actually compete.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-2"><span class="flex size-10 items-center justify-center rounded-xl bg-loch/15 text-loch"><i data-lucide="rocket" class="size-5"></i></span><h4 class="font-display mt-3 text-base font-semibold">Build &amp; deploy</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Wire the game to build and ship online. Real release engineering.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-2"><span class="flex size-10 items-center justify-center rounded-xl bg-loch/15 text-loch"><i data-lucide="wrench" class="size-5"></i></span><h4 class="font-display mt-3 text-base font-semibold">Tools &amp; scripts</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Small utilities that speed your team up. Importers, exporters, editors.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-3"><span class="flex size-10 items-center justify-center rounded-xl bg-loch/15 text-loch"><i data-lucide="monitor-play" class="size-5"></i></span><h4 class="font-display mt-3 text-base font-semibold">Trailer &amp; stream</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Cut a trailer, run the showcase stream. The stuff people remember.</p></div>
+          <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-3"><span class="flex size-10 items-center justify-center rounded-xl bg-loch/15 text-loch"><i data-lucide="megaphone" class="size-5"></i></span><h4 class="font-display mt-3 text-base font-semibold">Marketing page</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Copy, visuals, a launch post. Make sure people actually play it.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AWARDS -->
+    <section id="awards" class="scroll-mt-24 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> What's on the line</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Six awards. <span class="text-gradient-ember">All voted in the room.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">No single 'best game'. Six distinct ways to win, so the team that swung big on art has the same shot as the one that nailed the code.</p>
+        </div>
+        <div id="awards-grid" class="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+        <div class="mx-auto mt-8 flex max-w-4xl items-center gap-3 rounded-2xl border border-border/50 bg-background/40 p-5 text-left sm:text-left reveal reveal-delay-3">
+          <i data-lucide="award" class="size-6 shrink-0 text-gold"></i>
+          <p class="text-sm leading-relaxed text-muted-foreground">Every team takes home a certificate. Winners take home a second one.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUTCOMES -->
+    <section class="scroll-mt-24 border-y border-border/40 bg-card/20 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> What you walk away with</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">Six things you'll keep. <span class="text-gradient-ember">Beyond the game.</span></h2>
+        </div>
+        <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3" id="outcomes-grid"></div>
+      </div>
+    </section>
+
+    <!-- FOR PARENTS -->
+    <section id="parents" class="scroll-mt-24 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div class="max-w-3xl reveal">
+            <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> For parents</span>
+            <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">If your kid's here, <span class="text-gradient-ember">they're about to do something rare.</span></h2>
+            <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">Build a real thing, with real teammates, against a real clock. It's loud, it's intense, and it's genuinely good for them. Here's the short version.</p>
+            <div class="mt-8 flex items-center gap-4 rounded-2xl border border-border/50 bg-background/40 p-5 reveal reveal-delay-1">
+              <i data-lucide="shield-check" class="size-8 shrink-0 text-ember/70"></i>
+              <p class="text-sm italic leading-relaxed text-foreground/85">Watch your kid step into a role, build something with their hands, and put it on a stage. What they discover here, they carry forward.</p>
+            </div>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-1"><i data-lucide="sparkles" class="size-5 text-ember"></i><h4 class="font-display mt-3 text-base font-semibold">No experience needed</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Stick figures are fine. The whole point is finding where you fit.</p></div>
+            <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-2"><i data-lucide="users" class="size-5 text-ember"></i><h4 class="font-display mt-3 text-base font-semibold">Real teamwork</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Five people, five seats, one deadline. That's the whole skill.</p></div>
+            <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-3"><i data-lucide="hammer" class="size-5 text-ember"></i><h4 class="font-display mt-3 text-base font-semibold">They build, not scroll</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Screens are a tool here, not the activity. They create with them.</p></div>
+            <div class="card-ember card-hover spotlight h-full rounded-2xl p-5 reveal reveal-delay-4"><i data-lucide="award" class="size-5 text-ember"></i><h4 class="font-display mt-3 text-base font-semibold">Everyone's recognised</h4><p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">Every team takes home a certificate. Six ways to win more.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section id="register" class="scroll-mt-24 border-t border-border/40 bg-card/20 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> Lock your team in</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">See you in <span class="text-gradient-ember">August.</span></h2>
+          <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">Fill this in once per team. Your captain is our point of contact. Entry is ₹500 per student. Green Valley Educational Institute, Srinagar. Part of GVEI Hackathon 2026.</p>
+          <p class="mt-3 text-xs text-amber-400/80">This is a preview — submitting won't save anything. Run the real site to capture registrations.</p>
+        </div>
+        <div class="mx-auto mt-10 max-w-2xl" id="form-wrap">
+          <form id="reg-form" class="card-ember spotlight rounded-2xl p-5 sm:p-7 reveal reveal-delay-1">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div class="float-field grid gap-1.5"><input id="f-team" required placeholder=" " /><label for="f-team">Team name</label></div>
+              <div class="float-field grid gap-1.5"><input id="f-school" required placeholder=" " /><label for="f-school">School</label></div>
+            </div>
+            <div class="my-6 h-px bg-border/40"></div>
+            <div class="flex flex-wrap items-center gap-2"><span class="flex size-7 items-center justify-center rounded-md bg-ember/15 font-display text-xs font-bold text-ember">1</span><span class="text-sm font-semibold text-foreground">Captain</span><span class="inline-flex items-center rounded-full border border-ember/40 px-2 py-0.5 text-[10px] text-ember">The Director · fixed</span></div>
+            <div class="mt-3 grid gap-5 sm:grid-cols-2">
+              <div class="float-field grid gap-1.5"><input id="f-cname" required placeholder=" " /><label for="f-cname">Captain name</label></div>
+              <div class="float-field grid gap-1.5"><input id="f-cemail" type="email" required placeholder=" " /><label for="f-cemail">Captain email</label></div>
+            </div>
+            <div class="mt-5 float-field grid gap-1.5"><input id="f-cphone" required placeholder=" " /><label for="f-cphone">Captain phone</label></div>
+            <div class="my-6 h-px bg-border/40"></div>
+            <!-- Seat 2: Code -->
+            <div class="flex flex-wrap items-center gap-2"><span class="flex size-7 items-center justify-center rounded-md bg-ember/15 font-display text-xs font-bold text-ember">2</span><span class="text-sm font-semibold text-foreground">Code</span></div>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div class="float-field"><input required placeholder=" " data-seat="code-name" /><label>Coder's name</label></div>
+              <div class="float-field"><select required data-seat="code-role" class="has-value"><option value="">Pick a role</option><option>The Mechanic</option><option>The Architect</option><option>The Rigger</option></select><label>Role</label></div>
+            </div>
+            <!-- Seat 3: Art -->
+            <div class="mt-5 flex flex-wrap items-center gap-2"><span class="flex size-7 items-center justify-center rounded-md bg-ember/15 font-display text-xs font-bold text-ember">3</span><span class="text-sm font-semibold text-foreground">Art</span></div>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div class="float-field"><input required placeholder=" " data-seat="art-name" /><label>Artist's name</label></div>
+              <div class="float-field"><select required data-seat="art-role" class="has-value"><option value="">Pick a role</option><option>The Concept</option><option>The Sculptor</option><option>The Composer</option></select><label>Role</label></div>
+            </div>
+            <!-- Seat 4: Narrative/Design -->
+            <div class="mt-5 flex flex-wrap items-center gap-2"><span class="flex size-7 items-center justify-center rounded-md bg-ember/15 font-display text-xs font-bold text-ember">4</span><span class="text-sm font-semibold text-foreground">Narrative / Design</span></div>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div class="float-field"><input required placeholder=" " data-seat="nar-name" /><label>Writer or designer's name</label></div>
+              <div class="float-field"><select required data-seat="nar-role" class="has-value"><option value="">Pick a role</option><option>The Scribe</option><option>The Weaver</option></select><label>Role</label></div>
+            </div>
+            <!-- Seat 5: Wildcard -->
+            <div class="mt-5 flex flex-wrap items-center gap-2"><span class="flex size-7 items-center justify-center rounded-md bg-ember/15 font-display text-xs font-bold text-ember">5</span><span class="text-sm font-semibold text-foreground">Wildcard</span><span class="text-xs text-muted-foreground">Any role from the list.</span></div>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div class="float-field"><input required placeholder=" " data-seat="wild-name" /><label>Wildcard's name</label></div>
+              <div class="float-field"><select required data-seat="wild-role" class="has-value"><option value="">Pick a role</option><option>The Mechanic</option><option>The Architect</option><option>The Rigger</option><option>The Concept</option><option>The Sculptor</option><option>The Composer</option><option>The Scribe</option><option>The Weaver</option></select><label>Role</label></div>
+            </div>
+            <div class="my-6 h-px bg-border/40"></div>
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div class="float-field grid gap-1.5"><input id="f-genre" placeholder=" " /><label for="f-genre">Genre you're chasing (optional)</label></div>
+              <div class="float-field grid gap-1.5"><input id="f-idea" placeholder=" " /><label for="f-idea">Got an idea already? (optional)</label></div>
+            </div>
+            <label class="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-background/30 p-4 hover:border-ember/40 transition-colors">
+              <input type="checkbox" id="f-agree" class="mt-0.5 size-4 accent-orange-500" />
+              <span class="text-xs leading-relaxed text-muted-foreground">I confirm our team has five members — a Captain, a Code role, an Art role, a Narrative/Design role, and a Wildcard — and that the entry fee of <span class="font-semibold text-foreground/80">₹500 per student</span> applies. Ignyte runs across two days in August at Green Valley Educational Institute, Srinagar, as part of GVEI Hackathon 2026. Pyreloch will email the captain with next steps.</span>
+            </label>
+            <button type="submit" class="magnetic mt-6 w-full inline-flex" data-magnetic data-magnetic-strength="0.2">
+              <span class="magnetic-inner w-full items-center justify-center gap-2 rounded-md bg-ember px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-ember/90 h-11 ring-ember">
+                Register my team <i data-lucide="send" class="size-4"></i>
+              </span>
+            </button>
+          </form>
+          <div id="success" class="hidden border-shimmer card-ember relative overflow-hidden rounded-2xl p-8 text-center sm:p-12">
+            <div id="success-embers"></div>
+            <div class="relative">
+              <span class="mx-auto flex size-16 items-center justify-center rounded-2xl bg-ember/15 text-ember ring-ember animate-pulse-glow"><i data-lucide="check-circle-2" class="size-9"></i></span>
+              <h3 class="font-display mt-5 text-2xl font-bold sm:text-3xl" id="success-title">You're in.</h3>
+              <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">Your spot at Ignyte is locked. We've sent the next steps to your captain's inbox. See you in August.</p>
+              <div class="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/50 px-4 py-2 text-xs text-muted-foreground">Registration ID <span class="font-mono text-foreground/80" id="success-id">PREVIEW</span></div>
+              <div class="mt-6"><button id="reset-btn" class="inline-flex items-center justify-center rounded-md border border-border/70 px-4 py-2 text-sm hover:bg-accent">Register another team</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="scroll-mt-24 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-ember"><i data-lucide="sparkles" class="size-3.5"></i> Questions</span>
+          <h2 class="font-display mt-4 text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">The stuff you're <span class="text-gradient-ember">probably wondering.</span></h2>
+        </div>
+        <div class="mx-auto mt-10 max-w-3xl rounded-2xl border border-border/50 bg-background/30 px-5 reveal reveal-delay-1" id="faq-list"></div>
+      </div>
+    </section>
+
+    <!-- LAB -->
+    <section class="scroll-mt-24 border-t border-border/40 bg-card/20 py-16">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="card-ember spotlight mx-auto max-w-3xl rounded-2xl p-6 sm:p-8 reveal">
+          <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <span class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-ember/15 text-ember"><i data-lucide="mountain" class="size-6"></i></span>
+            <div class="flex-1">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted-foreground">If two days isn't enough</p>
+              <h3 class="font-display mt-1 text-lg font-semibold">Pyreloch Lab</h3>
+              <p class="mt-1 text-sm leading-relaxed text-muted-foreground">A six-month program, weekly sessions, where you ship a real game online. About ₹40 a day. Separate from Ignyte. Ask us at the event if you want to know more.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t border-border/40 bg-background">
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr]">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <span class="flex size-9 items-center justify-center rounded-xl bg-gradient-to-b from-ember/25 to-ember-deep/20"><svg class="size-5"><use href="#ig-mark"/></svg></span>
+            <div class="leading-none"><p class="font-display text-sm font-bold">Ignyte</p><p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">a Pyreloch game jam</p></div>
+          </div>
+          <p class="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">Part of GVEI Hackathon 2026, at Green Valley Educational Institute, Srinagar. One team, one theme, a game by the end.</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Explore</p>
+          <ul class="mt-4 space-y-2">
+            <li><a href="#overview" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">Overview</a></li>
+            <li><a href="#roles" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">Roles</a></li>
+            <li><a href="#jam" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">The Jam</a></li>
+            <li><a href="#awards" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">Awards</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Get in</p>
+          <ul class="mt-4 space-y-2">
+            <li><a href="#register" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">Register</a></li>
+            <li><a href="#faq" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">FAQ</a></li>
+            <li><a href="#mission" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">Mission</a></li>
+            <li><a href="#tools" class="shimmer-link text-sm text-muted-foreground hover:text-foreground">Tools</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="my-8 h-px bg-border/40"></div>
+      <div class="flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground sm:flex-row">
+        <p>© 2026 Pyreloch · Ignyte · GVEI Hackathon 2026</p>
+        <p class="flex items-center gap-1.5"><i data-lucide="sparkles" class="size-3 text-ember"></i> Made in the valley.</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- NEW: Back to top button -->
+<button class="back-to-top" id="back-to-top" aria-label="Back to top">
+  <i data-lucide="arrow-up" class="size-5"></i>
+</button>
+
+<script>
+/* ===== DATA ===== */
+const ROLES = [
+  { id:"gameplay", icon:"gamepad-2", name:"The Mechanic", cat:"code", one:"You make the world react.", do:"You write the rules under every button press. Movement, collisions, scoring, the feel of a jump. Without you, nothing moves.", build:"Computational thinking, logic, debugging.", love:"You think in steps. When something breaks, you want to know why.", tint:"oklch(0.8 0.16 60)", glow:"oklch(0.75 0.17 58 / 0.45)" },
+  { id:"systems", icon:"wrench", name:"The Architect", cat:"code", one:"You build what the game runs on.", do:"Not gameplay — the plumbing. Websites, leaderboards, build scripts, deploy pipelines. The stuff that turns a folder into a shipped game.", build:"Real software engineering. Web, backend, devops.", love:"You love code but not necessarily game logic. You want to ship real things.", tint:"oklch(0.74 0.11 158)", glow:"oklch(0.6 0.1 158 / 0.45)" },
+  { id:"animator", icon:"clapperboard", name:"The Rigger", cat:"code", one:"You make things move, by code.", do:"You build the skeletons and the systems that make things move — rigging, procedural motion, physics, VFX. You sit between art and code, turning animations into something the engine can actually play.", build:"Math, timing, and a feel for motion.", love:"You like code and visuals equally. You want things to look alive, not just correct.", tint:"oklch(0.7 0.18 20)", glow:"oklch(0.62 0.2 22 / 0.45)" },
+  { id:"concept", icon:"palette", name:"The Concept", cat:"art", one:"You give the world a face.", do:"Characters, environments, colour and mood — and the 2D art that carries them. The first thing a player falls for. That's you, from a blank canvas.", build:"Visual communication and composition.", love:"You see the world in pictures before words.", tint:"oklch(0.85 0.14 88)", glow:"oklch(0.83 0.13 86 / 0.45)" },
+  { id:"sculpt", icon:"boxes", name:"The Sculptor", cat:"art", one:"You build in three dimensions.", do:"You build in three dimensions — models, props, environments. You turn grey blocks into places a player wants to walk through.", build:"Spatial thinking, form, and lighting.", love:"You think in volume, not flat planes.", tint:"oklch(0.72 0.19 35)", glow:"oklch(0.56 0.21 38 / 0.45)" },
+  { id:"sound", icon:"music", name:"The Composer", cat:"art", one:"You set the mood.", do:"Music and sound design. The thing players remember without knowing why. A game without you feels hollow.", build:"Ear, timing, and emotional instinct.", love:"You hum soundtracks. Silence bothers you more than noise.", tint:"oklch(0.78 0.13 75)", glow:"oklch(0.72 0.14 70 / 0.45)" },
+  { id:"writer", icon:"pen-line", name:"The Scribe", cat:"direction", one:"You give the world a soul.", do:"You write the characters, the dialogue, the choices that branch. You give players a reason to care beyond the mechanics — a why behind every fight. A game without you is just a pile of systems.", build:"Creative writing, structure, voice.", love:"You hear characters talk in your head before you write them down.", tint:"oklch(0.72 0.18 12)", glow:"oklch(0.65 0.19 15 / 0.45)" },
+  { id:"designer", icon:"map", name:"The Weaver", cat:"direction", one:"You shape the experience.", do:"You design the experience itself — the levels, the pacing, the rules that make it fun. You balance challenge and reward, decide what the player does moment to moment, and shape how the whole thing feels to play. You make it play well, not just look good.", build:"Systems thinking, empathy, iteration.", love:"You've redone a level layout in your head three times already.", tint:"oklch(0.72 0.11 165)", glow:"oklch(0.6 0.1 160 / 0.45)" },
+  { id:"director", icon:"target", name:"The Director", cat:"direction", one:"You hold the vision.", do:"You hold the whole vision. You make the calls when the team disagrees, defend the scope when the clock's against you, and own what the game ultimately feels like to play. You're the tie-breaker and the north star — the one who makes sure five people ship one game, not five different ones.", build:"Taste, communication, leadership.", love:"You see the whole game in your head and get frustrated when others don't. Yet.", tint:"oklch(0.8 0.1 80)", glow:"oklch(0.75 0.12 85 / 0.4)" },
+];
+
+const TOOLS = [
+  ["Godot","Game engine","gamepad-2","engine"],["Unity","Game engine","gamepad-2","engine"],["Unreal","Game engine","monitor-play","engine"],["Defold","2D engine","gamepad-2","engine"],
+  ["Bevy","Rust engine","cpu","engine"],["Krita","Digital painting","palette","art"],["Aseprite","Pixel art","layers","art"],["GIMP","Image editing","palette","art"],
+  ["Inkscape","Vector art","pen-tool","art"],["Blender","3D + animation","boxes","3d"],["Spine","2D animation","clapperboard","art"],["OpenToonz","2D animation","clapperboard","art"],
+  ["Synfig","2D animation","clapperboard","art"],["Audacity","Sound editing","music","audio"],["LMMS","Music making","music","audio"],["Reaper","DAW","music","audio"],
+  ["Bosca Ceoil","Music, easy","music","audio"],["jsfxr","Sound effects","music","audio"],["Figma","UI design","pen-tool","art"],["Penpot","UI design, open","pen-tool","art"],
+  ["VS Code","Code editor","code-2","code"],["Cursor","AI code editor","code-2","code"],["Git","Version control","git-branch","code"],["GitHub Desktop","Git, visual","git-branch","code"],
+  ["Twine","Narrative","pen-line","narrative"],["ink","Branching story","pen-line","narrative"],["DaVinci Resolve","Trailer editing","clapperboard","ship"],["OBS","Capture + stream","monitor-play","ship"],
+  ["Notion","Docs + planning","layers","ship"],["Next.js","Game websites","globe","code"],["Trello","Task tracking","target","ship"],
+];
+
+const AWARDS = [
+  ["lightbulb","Most Original Concept","The idea nobody else would've thought of."],
+  ["star","Best Character & World","The one players won't shut up about."],
+  ["cpu","Best Technical Build","Clean code, smooth ship, no crashes."],
+  ["palette","Best Art & Sound","The look and the mood, together."],
+  ["pen-line","Best Story & Design","The narrative and the systems that carried it."],
+  ["trophy","People's Choice","Voted by everyone in the room."],
+];
+
+const OUTCOMES = [
+  ["layers","Systems & design thinking"],["pen-line","Writing that carries weight"],["palette","A real visual eye"],
+  ["users","Shipping with a team"],["megaphone","Pitching your work"],["timer","Cutting under pressure"],
+];
+
+const QUIZ = [
+  { q:"A blank screen. What goes there first?", options:[["The rules — what can the player actually do?","coder"],["A character. What do they look like?","artist"],["A line of dialogue. Who's talking and why?","director"]] },
+  { q:"The part of any game you fall for hardest.", options:[["The systems ticking under the hood","coder"],["The art and the music","artist"],["The characters and where the story goes","director"]] },
+  { q:"Your favourite kind of problem.", options:[["Something won't compile and I want to know why","coder"],["The composition's off and I can feel it","artist"],["The pacing drags and I need to cut","director"]] },
+  { q:"Pick the tool you'd open, just for fun.", options:[["A code editor","coder"],["A drawing tablet or a DAW","artist"],["A blank doc or a notebook","director"]] },
+  { q:"In a group, you end up...", options:[["Wiring it all together","coder"],["Making it look and sound right","artist"],["Holding the vision and the clock","director"]] },
+  { q:"Your dream project, one sentence.", options:[["A tight mechanic that just feels good","coder"],["A world people get lost in","artist"],["A story people replay to see the other end","director"]] },
+];
+const CAT_META = { coder:{tint:"oklch(0.8 0.16 60)",glow:"oklch(0.75 0.17 58 / 0.45)"}, artist:{tint:"oklch(0.85 0.14 88)",glow:"oklch(0.83 0.13 86 / 0.45)"}, director:{tint:"oklch(0.72 0.18 12)",glow:"oklch(0.65 0.19 15 / 0.45)"} };
+const CAT_ICON = { coder:"code-2", artist:"palette", director:"pen-line" };
+const CAT_LABEL = { code:"Code", art:"Art & Sound", direction:"Direction" };
+
+const FAQS = [
+  ["Do I need to know how to code?","No. Nine roles, and only some of them touch code. Artists, writers, designers, sound folks. Every team needs all of them."],
+  ["How does my team get built?","Five fixed seats: a Captain, a Code role, an Art role, a Narrative/Design role, and a Wildcard who can be anything. You bring the people, we slot them into the seats."],
+  ["What if I don't have a full team?","Register what you have and mark it on the form. We'll match you with free agents before kickoff to round out your seats."],
+  ["What does it cost?","₹500 per student. That's the whole fee for the two days."],
+  ["What should I bring?","A laptop if you have one. We'll have machines for teams that don't. Everything else, the tools and assets, is free."],
+  ["Do I pick my role ahead of time?","You can. Take the quiz above and lock it in on the form. You can also figure it out at kickoff. No pressure either way."],
+  ["Who picks the theme?","Pyreloch. It stays sealed until kickoff. Everyone finds out at the same moment."],
+  ["What can we actually make in two days?","Small and finished beats big and broken. A tight platformer, a short narrative, a polished mini-game. Scope down, polish up."],
+];
+
+/* ===== HERO TITLE: letter stagger ===== */
+(function(){
+  const el = document.getElementById("hero-title");
+  if (!el) return;
+  const text = el.textContent;
+  el.textContent = "";
+  [...text].forEach((ch, i) => {
+    const s = document.createElement("span");
+    s.className = "title-letter";
+    s.textContent = ch === " " ? "\u00A0" : ch;
+    s.style.animationDelay = (0.15 + i * 0.08) + "s";
+    el.appendChild(s);
+  });
+})();
+
+/* ===== EMBERS ===== */
+(function(){
+  const c = document.getElementById("embers");
+  for (let i=0;i<32;i++){
+    const s = document.createElement("span");
+    const bright = Math.random()>0.5;
+    s.className="animate-ember absolute bottom-0 rounded-full";
+    s.style.left=(Math.random()*100)+"%";
+    const sz=1.5+Math.random()*3.5; s.style.width=sz+"px"; s.style.height=sz+"px";
+    s.style.background=bright?"oklch(0.88 0.16 75)":"oklch(0.76 0.18 58)";
+    s.style.boxShadow=bright?"0 0 8px 1px oklch(0.76 0.18 58 / 0.85)":"0 0 6px 1px oklch(0.6 0.2 35 / 0.7)";
+    s.style.setProperty("--dur",(10+Math.random()*16)+"s");
+    s.style.setProperty("--drift",((Math.random()-0.5)*80)+"px");
+    s.style.animationDelay=(Math.random()*-24)+"s";
+    c.appendChild(s);
+  }
+})();
+
+/* ===== SCROLL PROGRESS BAR ===== */
+(function(){
+  const bar = document.getElementById("scroll-progress");
+  function update(){
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    const p = max > 0 ? (h.scrollTop / max) : 0;
+    bar.style.transform = "scaleX(" + p + ")";
+  }
+  document.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+})();
+
+/* ===== CURSOR GLOW ===== */
+(function(){
+  const glow = document.getElementById("cursor-glow");
+  if (!glow) return;
+  if (window.matchMedia("(pointer: coarse)").matches) { glow.style.display = "none"; return; }
+  let tx = 0, ty = 0, cx = 0, cy = 0;
+  document.addEventListener("mousemove", e => { tx = e.clientX; ty = e.clientY; });
+  function tick(){
+    cx += (tx - cx) * 0.18;
+    cy += (ty - cy) * 0.18;
+    glow.style.transform = "translate(" + cx + "px," + cy + "px) translate(-50%,-50%)";
+    requestAnimationFrame(tick);
+  }
+  // place at center first
+  cx = window.innerWidth/2; cy = window.innerHeight/2;
+  tick();
+})();
+
+/* ===== REVEAL ON SCROLL ===== */
+(function(){
+  const els = document.querySelectorAll(".reveal");
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+  els.forEach(el => io.observe(el));
+})();
+
+/* ===== COUNT-UP ===== */
+(function(){
+  const nums = document.querySelectorAll(".counter[data-count]");
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.count, 10);
+      const dur = 1400;
+      const start = performance.now();
+      function step(now){
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased).toString();
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target.toString();
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  nums.forEach(n => io.observe(n));
+})();
+
+/* ===== MAGNETIC BUTTONS ===== */
+(function(){
+  if (window.matchMedia("(pointer: coarse)").matches) return;
+  document.querySelectorAll("[data-magnetic]").forEach(el => {
+    const strength = parseFloat(el.dataset.magneticStrength || "0.3");
+    const inner = el.querySelector(".magnetic-inner");
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * strength;
+      const y = (e.clientY - r.top - r.height / 2) * strength;
+      el.style.transform = "translate(" + x + "px," + y + "px)";
+      if (inner) inner.style.transform = "translate(" + (x * 0.4) + "px," + (y * 0.4) + "px)";
+    });
+    el.addEventListener("mouseleave", () => {
+      el.style.transform = "";
+      if (inner) inner.style.transform = "";
+    });
+  });
+})();
+
+/* ===== SPOTLIGHT (cursor-following highlight inside cards) ===== */
+(function(){
+  if (window.matchMedia("(pointer: coarse)").matches) return;
+  document.querySelectorAll(".spotlight").forEach(el => {
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      el.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+  });
+})();
+
+/* ===== 3D TILT ON AWARD CARDS ===== */
+(function(){
+  if (window.matchMedia("(pointer: coarse)").matches) return;
+  // applied dynamically when awards render
+  document.addEventListener("tilt:enable", () => {
+    document.querySelectorAll(".tilt").forEach(el => {
+      el.addEventListener("mousemove", e => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = "perspective(900px) rotateY(" + (px * 8) + "deg) rotateX(" + (-py * 8) + "deg) translateY(-4px)";
+      });
+      el.addEventListener("mouseleave", () => { el.style.transform = ""; });
+    });
+  });
+})();
+
+/* ===== PARALLAX (hero layers) ===== */
+(function(){
+  if (window.matchMedia("(pointer: coarse)").matches) return;
+  const layers = document.querySelectorAll("[data-parallax]");
+  if (!layers.length) return;
+  document.addEventListener("mousemove", e => {
+    const x = (e.clientX / window.innerWidth - 0.5);
+    const y = (e.clientY / window.innerHeight - 0.5);
+    layers.forEach(l => {
+      const f = parseFloat(l.dataset.parallax) || 0.1;
+      l.style.transform = "translate(" + (x * f * -40) + "px," + (y * f * -40) + "px)";
+    });
+  });
+})();
+
+/* ===== BACK TO TOP ===== */
+(function(){
+  const btn = document.getElementById("back-to-top");
+  if (!btn) return;
+  document.addEventListener("scroll", () => {
+    if (window.scrollY > 700) btn.classList.add("show");
+    else btn.classList.remove("show");
+  }, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+})();
+
+/* ===== COUNTDOWN ===== */
+(function(){
+  // Target: next August 1 (tentative kickoff). Adjust year if already past.
+  const now = new Date();
+  let target = new Date(now.getFullYear(), 7, 1, 9, 0, 0); // Aug 1, 9am local
+  if (target < now) target = new Date(now.getFullYear() + 1, 7, 1, 9, 0, 0);
+  const dEl = document.getElementById("cd-d");
+  const hEl = document.getElementById("cd-h");
+  const mEl = document.getElementById("cd-m");
+  const sEl = document.getElementById("cd-s");
+  function pad(n){ return n < 10 ? "0" + n : "" + n; }
+  function set(el, val){
+    if (el.textContent !== val) {
+      el.classList.add("flipping");
+      setTimeout(() => { el.textContent = val; el.classList.remove("flipping"); }, 180);
+    }
+  }
+  function tick(){
+    const diff = target - new Date();
+    if (diff <= 0) {
+      set(dEl, "00"); set(hEl, "00"); set(mEl, "00"); set(sEl, "00");
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    set(dEl, pad(d));
+    set(hEl, pad(h));
+    set(mEl, pad(m));
+    set(sEl, pad(s));
+    setTimeout(tick, 1000);
+  }
+  tick();
+})();
+
+/* ===== CONFETTI ===== */
+function launchConfetti(){
+  const colors = ["oklch(0.84 0.15 70)","oklch(0.75 0.17 58)","oklch(0.62 0.16 35)","oklch(0.83 0.13 86)","oklch(0.6 0.1 158)"];
+  const N = 90;
+  for (let i = 0; i < N; i++){
+    const p = document.createElement("span");
+    p.className = "confetti-piece";
+    p.style.left = (Math.random() * 100) + "vw";
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.width = (6 + Math.random() * 8) + "px";
+    p.style.height = (8 + Math.random() * 12) + "px";
+    p.style.borderRadius = Math.random() > 0.5 ? "2px" : "50%";
+    const dur = 2.5 + Math.random() * 2.5;
+    const delay = Math.random() * 0.8;
+    p.style.animation = "confetti-fall " + dur + "s cubic-bezier(.22,1,.36,1) " + delay + "s forwards";
+    p.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), (dur + delay) * 1000 + 200);
+  }
+}
+
+/* ===== ROLES GRID + FILTER ===== */
+(function(){
+  const grid = document.getElementById("roles-grid");
+  const filterBtns = document.querySelectorAll("#role-filters .chip");
+  let currentFilter = "all";
+
+  function render(){
+    grid.innerHTML = "";
+    const list = currentFilter === "all" ? ROLES : ROLES.filter(r => r.cat === currentFilter);
+    list.forEach((r, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "group relative flex flex-col items-start gap-2 rounded-xl border border-border/60 p-4 text-left transition-all hover:border-border hover:bg-white/[0.03] reveal in";
+      btn.style.transitionDelay = (idx * 0.04) + "s";
+      btn.innerHTML = `
+        <div class="flex w-full items-center justify-between gap-2">
+          <span class="flex size-10 items-center justify-center rounded-lg" style="background:${r.tint}1a;color:${r.tint}"><i data-lucide="${r.icon}" class="size-5"></i></span>
+          <span class="text-[9px] uppercase tracking-[0.15em] px-1.5 py-0.5 rounded-full border border-border/50 text-muted-foreground">${CAT_LABEL[r.cat]}</span>
+        </div>
+        <p class="text-sm font-semibold text-foreground">${r.name}</p>
+        <p class="text-xs text-muted-foreground">${r.one}</p>
+        <div class="role-detail overflow-hidden text-xs leading-relaxed text-foreground/80" style="max-height:0;transition:max-height .35s cubic-bezier(.22,1,.36,1),opacity .3s ease;opacity:0">
+          <p>${r.do}</p>
+          <p class="mt-2 text-muted-foreground">You build ${r.build.toLowerCase()}</p>
+          <p class="mt-1 italic text-muted-foreground">You'll love it if ${r.love.toLowerCase()}</p>
+        </div>`;
+      btn.addEventListener("click",()=>{
+        const d = btn.querySelector(".role-detail");
+        const open = d.style.maxHeight!=="0px" && d.style.maxHeight!=="";
+        if(open){ d.style.maxHeight="0px"; d.style.opacity="0"; btn.style.boxShadow=""; btn.classList.remove("border-transparent","bg-white/[0.04]"); btn.classList.add("border-border/60"); }
+        else { d.style.maxHeight="320px"; d.style.opacity="1"; btn.style.boxShadow=`0 0 0 1px ${r.tint}, 0 0 28px -8px ${r.glow}`; btn.classList.add("border-transparent","bg-white/[0.04]"); btn.classList.remove("border-border/60"); }
+      });
+      grid.appendChild(btn);
+    });
+    lucide.createIcons();
+  }
+  filterBtns.forEach(b => b.addEventListener("click", () => {
+    filterBtns.forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    currentFilter = b.dataset.filter;
+    render();
+  }));
+  render();
+})();
+
+/* ===== QUIZ ===== */
+(function(){
+  const root = document.getElementById("quiz");
+  let step=0, answers={}, result=null;
+  function render(){
+    if(result){
+      const meta = CAT_META[result];
+      const roles = ROLES.filter(r=> ({coder:["gameplay","systems","animator"],artist:["concept","sculpt","sound"],director:["writer","designer"]})[result].includes(r.id));
+      root.innerHTML = `
+        <div class="quiz-step text-center">
+          <span class="mx-auto flex size-16 items-center justify-center rounded-2xl animate-pulse-glow" style="background:${meta.tint}1a;color:${meta.tint};box-shadow:0 0 40px -8px ${meta.glow}"><i data-lucide="${CAT_ICON[result]}" class="size-8"></i></span>
+          <p class="mt-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">You'd thrive here</p>
+          <p class="mt-2 text-sm text-muted-foreground">Three roles that fit how you think. Pick one when you register.</p>
+          <div class="mt-5 grid gap-2 text-left">
+            ${roles.map((r,i)=>`<div class="reveal in quiz-step flex items-center gap-2 rounded-lg border border-border/50 bg-background/40 p-2.5 hover:border-ember/40 hover:bg-white/[0.03] transition-all" style="transition-delay:${i*0.08}s"><span class="flex size-7 items-center justify-center rounded-md" style="background:${r.tint}1a;color:${r.tint}"><i data-lucide="${r.icon}" class="size-4"></i></span><span class="text-xs font-medium text-foreground/90">${r.name}</span></div>`).join("")}
+          </div>
+          <p class="mt-4 text-xs text-muted-foreground">Take it again if you're not sure — or just pick the one that sounds like you.</p>
+        </div>
+        <div class="mt-5 text-center"><button id="quiz-reset" class="inline-flex items-center justify-center rounded-md border border-border/70 px-4 py-2 text-sm hover:bg-accent">Run it again</button></div>`;
+      lucide.createIcons();
+      document.getElementById("quiz-reset").onclick=()=>{ step=0;answers={};result=null;render(); };
+      return;
+    }
+    const cur = QUIZ[step];
+    const progress = (step/QUIZ.length)*100;
+    root.innerHTML = `
+      <div class="quiz-step">
+        <div class="flex items-center justify-between"><h4 class="font-display text-lg font-semibold">Which role fits you?</h4><span class="rounded-md bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">${step+1}/${QUIZ.length}</span></div>
+        <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-border/40"><div class="h-full rounded-full bg-gradient-to-r from-ember to-gold transition-all duration-500" style="width:${progress}%"></div></div>
+        <div class="mt-5"><p class="text-sm font-medium text-foreground/90">${cur.q}</p>
+        <div class="mt-3 grid gap-2">
+          ${cur.options.map((o,i)=>`<button class="quiz-opt flex items-center gap-2 rounded-lg border border-border/60 px-3 py-2.5 text-left text-xs text-muted-foreground hover:border-ember/50 hover:bg-white/[0.03] hover:text-foreground transition-all" data-i="${i}"><span class="flex size-4 shrink-0 items-center justify-center rounded-full border border-border"></span><span class="flex-1">${o[0]}</span></button>`).join("")}
+        </div></div>
+        ${step>0?`<button id="quiz-back" class="mt-4 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"><i data-lucide="arrow-left" class="size-3"></i> Back</button>`:""}
+      </div>`;
+    lucide.createIcons();
+    if(step>0) document.getElementById("quiz-back").onclick=()=>{ step--; render(); };
+    root.querySelectorAll(".quiz-opt").forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; answers[step]=cur.options[i][1];
+        if(step<QUIZ.length-1){ step++; render(); }
+        else {
+          const counts={coder:0,artist:0,director:0}; Object.values(answers).forEach(c=>counts[c]++);
+          result=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+          render();
+        }
+      };
+    });
+  }
+  render();
+})();
+
+/* ===== TOOLS MARQUEE + GRID + FILTER ===== */
+(function(){
+  const track=document.getElementById("marquee-track");
+  const grid=document.getElementById("tools-grid");
+  const filterBtns = document.querySelectorAll("#tool-filters .chip");
+  let currentFilter = "all";
+
+  const items=[...TOOLS,...TOOLS];
+  function renderGrid(){
+    grid.innerHTML = "";
+    const list = currentFilter === "all" ? TOOLS : TOOLS.filter(t => t[3] === currentFilter);
+    list.forEach((t, idx) => {
+      const div=document.createElement("div");
+      div.className="card-ember card-hover spotlight flex items-center gap-3 rounded-xl p-4 reveal in";
+      div.style.transitionDelay = (idx * 0.03) + "s";
+      div.innerHTML=`<span class="flex size-9 items-center justify-center rounded-lg bg-ember/15 text-ember"><i data-lucide="${t[2]}" class="size-4"></i></span><div class="min-w-0"><p class="truncate text-sm font-semibold text-foreground">${t[0]}</p><p class="truncate text-xs text-muted-foreground">${t[1]}</p></div>`;
+      grid.appendChild(div);
+    });
+    lucide.createIcons();
+  }
+  // marquee once
+  items.forEach(t=>{
+    const s=document.createElement("span");
+    s.className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground";
+    s.innerHTML=`<i data-lucide="${t[2]}" class="size-4 text-ember/80"></i><span class="font-medium text-foreground/80">${t[0]}</span><span class="text-xs text-muted-foreground/70">· ${t[1]}</span>`;
+    track.appendChild(s);
+  });
+  filterBtns.forEach(b => b.addEventListener("click", () => {
+    filterBtns.forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    currentFilter = b.dataset.tfilter;
+    renderGrid();
+  }));
+  renderGrid();
+  lucide.createIcons();
+})();
+
+/* ===== AWARDS + OUTCOMES ===== */
+(function(){
+  const ag=document.getElementById("awards-grid");
+  AWARDS.forEach((a, idx) => {
+    const d=document.createElement("div");
+    d.className="tilt card-ember card-hover h-full items-start gap-4 rounded-2xl p-5 reveal in";
+    d.style.transitionDelay = (idx * 0.08) + "s";
+    d.innerHTML=`<span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-ember/25 to-gold/15 text-ember"><i data-lucide="${a[0]}" class="size-5"></i></span><div><p class="font-display text-base font-semibold text-foreground">${a[1]}</p><p class="mt-0.5 text-sm text-muted-foreground">${a[2]}</p></div>`;
+    ag.appendChild(d);
+  });
+  const og=document.getElementById("outcomes-grid");
+  OUTCOMES.forEach((o, idx) => {
+    const d=document.createElement("div");
+    d.className="card-ember card-hover spotlight flex items-center gap-3 rounded-2xl p-5 reveal in";
+    d.style.transitionDelay = (idx * 0.06) + "s";
+    d.innerHTML=`<span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-ember/15 text-ember"><i data-lucide="${o[0]}" class="size-5"></i></span><p class="text-sm font-medium leading-snug text-foreground/90">${o[1]}</p>`;
+    og.appendChild(d);
+  });
+  lucide.createIcons();
+  document.dispatchEvent(new Event("tilt:enable"));
+})();
+
+/* ===== FAQ ===== */
+(function(){
+  const list=document.getElementById("faq-list");
+  FAQS.forEach((f,i)=>{
+    const d=document.createElement("details");
+    d.className=i===FAQS.length-1?"":"border-b border-border/40";
+    d.innerHTML=`<summary class="flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-base font-medium text-foreground hover:text-ember/90 transition-colors group"><span class="acc-q">${f[0]}</span><i data-lucide="chevron-down" class="acc-chevron text-muted-foreground group-hover:text-ember size-4 shrink-0 translate-y-0.5"></i></summary><div class="pb-4 text-sm leading-relaxed text-muted-foreground">${f[1]}</div>`;
+    list.appendChild(d);
+  });
+  lucide.createIcons();
+})();
+
+/* ===== FLOATING LABEL: track select state ===== */
+(function(){
+  document.querySelectorAll(".float-field select").forEach(sel => {
+    function upd(){ if (sel.value && sel.value !== "") sel.classList.add("has-value"); else sel.classList.remove("has-value"); }
+    sel.addEventListener("change", upd);
+    sel.addEventListener("blur", upd);
+    upd();
+  });
+})();
+
+/* ===== NAV: scroll-spy + mobile menu ===== */
+(function(){
+  const sections=["overview","mission","roles","jam","tools","awards","register","faq"];
+  const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){document.querySelectorAll(".nav-btn").forEach(b=>{const on=b.dataset.nav===e.target.id; b.classList.toggle("active",on); b.classList.toggle("bg-white/[0.06]",on); b.classList.toggle("text-foreground",on); b.classList.toggle("text-muted-foreground",!on);});}});},{rootMargin:"-45% 0px -50% 0px",threshold:0});
+  sections.forEach(id=>{const el=document.getElementById(id); if(el)obs.observe(el);});
+  const btn=document.getElementById("menu-btn"), menu=document.getElementById("mobile-menu");
+  btn.onclick=()=>{const open=!menu.classList.contains("hidden"); menu.classList.toggle("hidden"); document.getElementById("menu-icon").setAttribute("data-lucide", open?"menu":"x"); lucide.createIcons();};
+  menu.querySelectorAll("a").forEach(a=>a.onclick=()=>{menu.classList.add("hidden"); document.getElementById("menu-icon").setAttribute("data-lucide","menu"); lucide.createIcons();});
+})();
+
+/* ===== FORM (mock submit + confetti) ===== */
+(function(){
+  const form=document.getElementById("reg-form"), wrap=document.getElementById("form-wrap"), success=document.getElementById("success");
+  form.onsubmit=e=>{
+    e.preventDefault();
+    const team=document.getElementById("f-team").value.trim()||"your team";
+    const reqs=form.querySelectorAll("[required]"); for(const r of reqs){ if(!r.value.trim()){ r.focus(); return; } }
+    if(!document.getElementById("f-agree").checked){ alert("Tick the box so we know you've read the terms."); return; }
+    form.classList.add("hidden");
+    success.classList.remove("hidden");
+    document.getElementById("success-title").textContent="You're in, "+team+".";
+    document.getElementById("success-id").textContent="PREVIEW-"+Math.random().toString(36).slice(2,8).toUpperCase();
+    // embers in success
+    const ec=document.getElementById("success-embers");
+    ec.innerHTML="";
+    for(let i=0;i<18;i++){const s=document.createElement("span");const br=Math.random()>0.5;s.className="animate-ember absolute bottom-0 rounded-full";s.style.left=(Math.random()*100)+"%";const sz=1.5+Math.random()*3;s.style.width=sz+"px";s.style.height=sz+"px";s.style.background=br?"oklch(0.88 0.16 75)":"oklch(0.76 0.18 58)";s.style.boxShadow=br?"0 0 8px 1px oklch(0.76 0.18 58 / 0.85)":"0 0 6px 1px oklch(0.6 0.2 35 / 0.7)";s.style.setProperty("--dur",(10+Math.random()*16)+"s");s.style.setProperty("--drift",((Math.random()-0.5)*80)+"px");s.style.animationDelay=(Math.random()*-24)+"s";ec.appendChild(s);}
+    lucide.createIcons();
+    launchConfetti();
+    setTimeout(() => success.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+  };
+  document.getElementById("reset-btn").onclick=()=>{ success.classList.add("hidden"); form.classList.remove("hidden"); form.reset(); document.querySelectorAll(".float-field select").forEach(s => s.classList.remove("has-value")); };
+})();
+
+lucide.createIcons();
+</script>
+</body>
+</html>

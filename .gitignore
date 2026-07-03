@@ -1,0 +1,11 @@
+node_modules/
+.env
+dist/
+backend/public/
+*.log
+.DS_Store
+uploads/
+ssl/
+*.pem
+.next/
+out/
